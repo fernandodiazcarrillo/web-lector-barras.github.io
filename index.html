@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Barcode Scanner</title>
+    <style>
+        video {
+            width: 100%;
+            height: auto;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Barcode Scanner</h1>
+    <video id="video" autoplay></video>
+    <p id="result">Scanning...</p>
+
+    <!-- Incluir la librería ZXing -->
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest"></script>
+    <script>
+        window.addEventListener('load', function() {
+            const codeReader = new ZXing.BrowserMultiFormatReader();
+            const video = document.getElementById('video');
+            const result = document.getElementById('result');
+
+            codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
+                if (result) {
+                    result.textContent = `Barcode: ${result.text}`;
+                    console.log(result);
+                }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
+                    result.textContent = `Error: ${err}`;
+                }
+            })
+            .catch(err => console.error(err));
+
+            // Manejar la finalización de la captura de video
+            window.addEventListener('beforeunload', () => {
+                codeReader.reset();
+            });
+        });
+    </script>
+</body>
+</html>
